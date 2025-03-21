@@ -44,6 +44,7 @@ const createWindow = () => {
 }
  
 // Janela SOBRE
+let about
 function aboutWindow() {
   nativeTheme.themeSource='light'
   // Obter a janela principal
@@ -51,19 +52,62 @@ function aboutWindow() {
   // Validação (se existir a janela principal)
   if (mainWindow) {
     about = new BrowserWindow({
-      width: 320,
-      height: 280,
+      width: 330,
+      height: 230,
+      //autoHideMenuBar: true,
+      //resizable: false,
+      //minimizable: false,
+      // Estabelecer uma relação hierárquica entre janelas
+      parent: mainWindow,
+      // Criar uma janela modal (só retorna a principal quando encerrada)
+      modal: true,
+      webPreferences: {
+        preload: path.join(__dirname,'preload.js')
+      }
+
+  })
+}
+ 
+  about.loadFile('./src/views/sobre.html')
+
+  //recebimento da mensagem do renderizador da tela sobre para fechar a janela usando o botão OK
+  ipcMain.on('about-exit', () => {
+    //validação (se existir a janela e ela não estiver destruída, fechar)
+    if(about && !about.isDestryed) {
+      about.close()
+    }
+   
+  })
+}
+
+// Janela Nota
+let note
+function noteWindow() {
+  nativeTheme.themeSource='light'
+  // Obter a janela principal
+  const mainWindow = BrowserWindow.getFocusedWindow()
+  // Validação (se existir a janela principal)
+  if (mainWindow) {
+    note = new BrowserWindow({
+      width: 400,
+      height: 270,
       autoHideMenuBar: true,
       resizable: false,
       minimizable: false,
       // Estabelecer uma relação hierárquica entre janelas
       parent: mainWindow,
       // Criar uma janela modal (só retorna a principal quando encerrada)
-      modal: true
+      modal: true,
+      webPreferences: {
+        preload: path.join(__dirname,'preload.js')
+      }
+
   })
 }
  
-  about.loadFile('./src/views/sobre.html')
+  note.loadFile('./src/views/nota.html')
+
+  
 }
  
  
@@ -76,15 +120,17 @@ app.whenReady().then(() => {
 //ipcMain.on (receber mensagem)
 // db-connect (rótulo da mensagem)
  ipcMain.on('db-connect', async (event) => {
-  //A linha abaixo estabelece a conexão com o banco de dados 
-  await conectar()
-
-  //Enviar ao renderizador uma mensagem para trocar a imagem do icone do status do banco de dados (criar um delay de 0.5 ou 1s para sincronização com a nuvem)
+  //A linha abaixo estabelece a conexão com o banco de dados e verifica se foi conectado com sucesso (return true)
+  const conectado = await conectar()
+  if(conectado ) {
+    //Enviar ao renderizador uma mensagem para trocar a imagem do icone do status do banco de dados (criar um delay de 0.5 ou 1s para sincronização com a nuvem)
   setTimeout(() => {
     //enviar ao renderizador a mensagem "conectado"
     //db-status (IPC - comunicação entre processos - preload.js)
     event.reply('db-status', "conectado")
   }, 500) //500ms = 0.5s
+  }
+  
  })
 
  
@@ -117,7 +163,8 @@ const template = [
     submenu: [
       {
         label: 'Criar nota',
-        accelerator: 'Ctrl+N'  
+        accelerator: 'Ctrl+N',
+        click: () => noteWindow()  
       },
       {
         type: 'separator'      
