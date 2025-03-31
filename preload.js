@@ -11,7 +11,9 @@ const { contextBridge, ipcRenderer } = require ('electron')
 contextBridge.exposeInMainWorld('api', {
     dbStatus: (message) => ipcRenderer.on('db-status', message),
     aboutExit: () => ipcRenderer.send('about-exit'),
-    createNote: (stickyNotes) => ipcRenderer.send('create-note', stickyNotes)
+    createNote: (stickyNotes) => ipcRenderer.send('create-note', stickyNotes),
+    // "args" Argumento Vazio
+    resetForm: (args) => ipcRenderer.on('reset-form', args)
 })
 
 //Enviar uma mensagem para o main.js estabelecer um conexão com o banco de dados quando iniciar a aplicação
