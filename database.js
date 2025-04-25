@@ -1,5 +1,5 @@
 /**
- * Módulo de conexão com o banco de dados
+ * Módulo de conexão com o banco de dados //
  * Uso do framework mongoose
  */
 

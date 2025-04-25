@@ -213,7 +213,7 @@ const template = [
     submenu: [
       {
         label: 'Repositório',
-        click: () => shell.openExternal('https://github.com/brudorea/stickynotes')
+        click: () => shell.openExternal('https://github.com/BielCoutinho/sticknotes')
       },
       {
         label: 'Sobre',
@@ -230,7 +230,9 @@ const template = [
 ipcMain.on('create-note', async(event, stickyNote) =>{
   //IMPORTANTE! Teste do reecebimento do objeto (Passo 2)
   console.log(stickyNote)
-  //Criar uma nova estrutura de dados para salvar no banco
+  // uso do try-cath para o tratamento de excessões
+  try {
+    //Criar uma nova estrutura de dados para salvar no banco
   //Atençaõ!! os atributos da estrutura precisam se idênticos ao modelo e os valores são obtidos atraves do objeto sticknotes
   const newNote = noteModel ({
     texto: stickyNote.textNote,
@@ -240,8 +242,51 @@ ipcMain.on('create-note', async(event, stickyNote) =>{
   newNote.save()
   // ENviar ao renderizador um pedido para limpar os campos e setar o formulário com o padrões originais (foco no texto), usando o preload.js
   event.reply('reset-form')
+  } catch (error) {
+    console.log(error)
+  }
+  
 })
 
 
 //== Fim - CRUD Create ======================================================
 //===========================================================================
+
+
+// =================================================================================
+// === Crud Read ===================================================================
+
+// Passo 2: Receber do renderer o pedido para listar as notas e fazer a busca no banco de dados
+ipcMain.on('list-notes', async (event) => {
+  // console.log("teste IPC [list-notes]")
+  try {
+    // Passo 3: obter dados do banco a listagem de notas cadastradas
+    const notes = await noteModel.find()
+    console.log(notes) // teste passo 3
+    //Passo 4: enviar ao rederer a listagem das notas
+    // obs: IPC (string) | banco (JSON) (é necessário uma conversão JSON.stringify())
+    // event.reply() resposta a solicitação (específica do soliciante)
+    event.reply('render-notes', JSON.stringify(notes))
+    
+  } catch (error) {
+    console.log(error)
+    
+  }
+})
+
+// atualização das notas na janela principal
+ipcMain.on('update-list', () => {
+  // validação (se a janela principal exixtir e não tiver sido encerrada)
+  if (win && !win.isDestroyed()){
+    // enviar ao renderer.js um pedido para recarregar a página
+    win.webContents.send('main-reload')
+    //enviar novamente um pedido para troca do ícone de status 
+    setTimeout(() => {
+      win.webContents.send('db-status', "conectado")
+    }, 200) // tempo para garantir que o renderer esteja pronto
+  }
+})
+
+// =================================================================================
+// === Fim -Crud Read ==============================================================
+
