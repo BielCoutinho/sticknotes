@@ -1,12 +1,12 @@
 @charset "UTF-8";
 
-/**Importação de fonts off-line**/
+
 @font-face {
     font-family: "static";
     src: url("../static/NotoSansJP-Black.ttf");
 }
 
-/*Variáveis para as cores das notas */
+
 
 :root {
     --amarelo: #fff68f;
@@ -19,7 +19,7 @@
 
 }
 
-/*CSS Reset*/
+
 * {
     margin: 0;
     padding: 0;
@@ -53,7 +53,7 @@ footer p {
     margin: 4px 0px 0px 5px;
 }
 
-/*Sobre*/
+
 
 #sobre h3 {
     color: var(--cinza);
@@ -64,7 +64,7 @@ footer p {
     padding: 15px;
 }
 
-/* Botões */
+
 button {
     padding: 5px 15px;
     border: 1px solid var(--cinza);
@@ -76,7 +76,7 @@ button {
 
 }
 
-/*Janela Nova nota*/
+
 .novaNota {
     display: flex;
     flex-direction: column;
@@ -98,7 +98,7 @@ button {
     border-radius: 5px;
 }
 
-/* Notas */
+
 #code,
 #color {
     display: none;
