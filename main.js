@@ -14,7 +14,7 @@ const path = require('node:path')
 
 // Importação dos métodos conectar e desconectar (modulo de conexão)
 
-const { conectar, desconectar } = require('./database.js')
+const { connectDB, disconnectDB } = require('./database.js')
  const { on } = require('node:events')
 
 //Importação do modelo de dados (Notes.js)
@@ -126,8 +126,8 @@ app.whenReady().then(() => {
   // db-connect (rótulo da mensagem)
   ipcMain.on('db-connect', async (event) => {
     //A linha abaixo estabelece a conexão com o banco de dados e verifica se foi conectado com sucesso (return true)
-    const conectado = await conectar()
-    if (conectado) {
+    const connected = await connectDB()
+    if (connected) {
       //Enviar ao renderizador uma mensagem para trocar a imagem do icone do status do banco de dados (criar um delay de 0.5 ou 1s para sincronização com a nuvem)
       setTimeout(() => {
         //enviar ao renderizador a mensagem "conectado"
@@ -155,7 +155,7 @@ app.on('window-all-closed', () => {
 
 // Importante! desconectar do banco de dados quando a aplicaçâo for finalizada 
 app.on('before-quit', async () => {
-  await desconectar()
+  await disconnectDB()
 })
 
 // Reduzir a verbozidade de logs não criticos (devtools)

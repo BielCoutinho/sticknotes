@@ -3,7 +3,7 @@
  */
 
 //enviar uam mensagem para o processo principal fechar a janela sobre
-function fechar() {
+function exit() {
     //executar a função aboutExit() vinculada ao preload.js, atraves da api do electron(ipcRenderer)
     api.aboutExit()
 }
